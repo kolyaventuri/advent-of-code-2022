@@ -14,7 +14,7 @@ const splitLines = lines.map(line =>
     .replace(/\[\]/g, '?')
     .replace(/\[|\]/g, '')
 );
-const stacks: (string | null)[][] = [];
+const originalStacks: string[][] = [];
 for (const line of splitLines) {
   if (line[0] === '1') {
     index += 1;
@@ -25,19 +25,19 @@ for (const line of splitLines) {
     const item = line[i];
     if (!item) continue;
 
-    if (!stacks[i]) stacks[i] = [];
+    if (!originalStacks[i]) originalStacks[i] = [];
     if (item === '?') continue;
-    stacks[i].unshift(item);
+    originalStacks[i].unshift(item);
   }
   index += 1;
 }
 
-if (DEBUG) console.log(stacks);
+if (DEBUG) console.log(originalStacks);
 
 if (DEBUG) console.log('Instructions start on', index + 1);
 
 // Debug
-const logStack = () => {
+const logStack = (stacks: typeof originalStacks) => {
   const tallestStack = Math.max(...stacks.map(n => n.length));
   let rotated: string[][] = [];
 
@@ -100,42 +100,51 @@ const parseInstruction = (instruction: string, line: number): Instruction => {
 
 const instructions = instructionStrings.map((s, i) => parseInstruction(s, i));
 
-const makeMove = ({from, to}: Omit<Instruction, 'amount'>) => {
-  const item = stacks[from].pop() as string;
+const part1 = (inStacks: typeof originalStacks) => {
+  const stacks = JSON.parse(JSON.stringify(inStacks));
 
-  stacks[to].push(item);
+  const makeMove = ({from, to}: Omit<Instruction, 'amount'>) => {
+    const item = stacks[from].pop() as string;
 
-  stacks[from] = stacks[from].filter(n => !!(n ?? '').trim());
-  stacks[to] = stacks[to].filter(n => !!(n ?? '').trim());
-};
+    stacks[to].push(item);
 
-const execute = ({amount, from, to}: Instruction) => {
-  for (let i = 0; i < amount; i++) {
-    makeMove({from, to});
-  }
-};
+    stacks[from] = stacks[from].filter(n => !!(n ?? '').trim());
+    stacks[to] = stacks[to].filter(n => !!(n ?? '').trim());
+  };
 
-const executeLoop = () => {
-  for (let i = 0; i < instructions.length; i++) {
-    const instruction = instructions[i];
-    if (DEBUG) console.log(instruction)
-    const {amount, from, to} = instruction;
-    if (DEBUG) console.log(`Instruction ${i + 1}: move ${amount} from ${from + 1} to ${to + 1}`);
-    execute(instruction);
-    if (DEBUG) {
-      console.log('===========');
-      logStack();
-      console.log('===========');
+
+
+  const execute = ({amount, from, to}: Instruction) => {
+    for (let i = 0; i < amount; i++) {
+      makeMove({from, to});
+    }
+  };
+
+  const executeLoop = () => {
+    for (let i = 0; i < instructions.length; i++) {
+      const instruction = instructions[i];
+      if (DEBUG) console.log(instruction)
+      const {amount, from, to} = instruction;
+      if (DEBUG) console.log(`Instruction ${i + 1}: move ${amount} from ${from + 1} to ${to + 1}`);
+      execute(instruction);
+      if (DEBUG) {
+        console.log('===========');
+        logStack(stacks);
+        console.log('===========');
+      }
     }
   }
-}
 
-if (DEBUG) {
-  logStack();
-}
-executeLoop();
+  if (DEBUG) {
+    logStack(stacks);
+  }
+  executeLoop();
 
-const topMost = stacks.map(stack => stack[stack.length - 1]).filter(item => !!item);
-const result = topMost.reduce((s = '', n) => s += n);
+  let topMost = stacks.map(stack => stack[stack.length - 1]).filter(item => !!item);
+  let result = topMost.reduce((s = '', n) => s += n);
 
-console.log('Part 1:', result);
+  return result;
+};
+
+const part1Result = part1(originalStacks);
+console.log('Part 1:', part1Result);
