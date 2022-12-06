@@ -14,7 +14,9 @@ const splitLines = lines.map(line =>
     .replace(/\[\]/g, '?')
     .replace(/\[|\]/g, '')
 );
-const originalStacks: string[][] = [];
+
+type Stacks = string[][];
+const originalStacks: Stacks = [];
 for (const line of splitLines) {
   if (line[0] === '1') {
     index += 1;
@@ -37,7 +39,7 @@ if (DEBUG) console.log(originalStacks);
 if (DEBUG) console.log('Instructions start on', index + 1);
 
 // Debug
-const logStack = (stacks: typeof originalStacks) => {
+const logStack = (stacks: Stacks) => {
   const tallestStack = Math.max(...stacks.map(n => n.length));
   let rotated: string[][] = [];
 
@@ -100,7 +102,12 @@ const parseInstruction = (instruction: string, line: number): Instruction => {
 
 const instructions = instructionStrings.map((s, i) => parseInstruction(s, i));
 
-const part1 = (inStacks: typeof originalStacks) => {
+const getTopMost = (stacks: Stacks) => {
+  const topMost = stacks.map(stack => stack[stack.length - 1]).filter(item => !!item);
+ return topMost.reduce((s = '', n) => s += n);
+}
+
+const part1 = (inStacks: Stacks) => {
   const stacks = JSON.parse(JSON.stringify(inStacks));
 
   const makeMove = ({from, to}: Omit<Instruction, 'amount'>) => {
@@ -140,11 +147,16 @@ const part1 = (inStacks: typeof originalStacks) => {
   }
   executeLoop();
 
-  let topMost = stacks.map(stack => stack[stack.length - 1]).filter(item => !!item);
-  let result = topMost.reduce((s = '', n) => s += n);
-
-  return result;
+  return getTopMost(stacks);
 };
 
 const part1Result = part1(originalStacks);
 console.log('Part 1:', part1Result);
+
+// Part 2
+const part2: typeof part1 = (stacks): string => {
+  return getTopMost(stacks); 
+};
+
+const part2Result = part2(originalStacks);
+console.log('Part 2:', part2Result)
