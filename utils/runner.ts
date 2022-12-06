@@ -1,7 +1,18 @@
-const num = process.argv[2] ?? null;
-const isTest = process.argv[3] === 'test';
+import yargs from 'yargs/yargs';
+import {hideBin} from 'yargs/helpers';
+
+const argv = yargs(hideBin(process.argv)).argv
+
+// @ts-expect-error
+const num = argv._[0];
+const isTest = argv.test || argv.t; 
+const isDebug = argv.debug || argv.d;
 if (isTest) {
   process.env.IS_TEST = 'true';
+}
+
+if (isDebug) {
+  process.env.IS_DEBUG = 'true';
 }
 
 if (num === null) {
