@@ -60,11 +60,11 @@ const logStack = (stacks: Stacks) => {
       if (item) {
         output.push(`[${item}]`);
       } else {
-        output.push(' ');
+        output.push('   ');
       }
     }
 
-    console.log(output.join(' '));
+    console.log(output.join(''));
   }
 }
 
@@ -108,7 +108,7 @@ const getTopMost = (stacks: Stacks) => {
 }
 
 const part1 = (inStacks: Stacks) => {
-  const stacks = JSON.parse(JSON.stringify(inStacks));
+  const stacks: Stacks = JSON.parse(JSON.stringify(inStacks));
 
   const makeMove = ({from, to}: Omit<Instruction, 'amount'>) => {
     const item = stacks[from].pop() as string;
@@ -118,8 +118,6 @@ const part1 = (inStacks: Stacks) => {
     stacks[from] = stacks[from].filter(n => !!(n ?? '').trim());
     stacks[to] = stacks[to].filter(n => !!(n ?? '').trim());
   };
-
-
 
   const execute = ({amount, from, to}: Instruction) => {
     for (let i = 0; i < amount; i++) {
@@ -154,9 +152,46 @@ const part1Result = part1(originalStacks);
 console.log('Part 1:', part1Result);
 
 // Part 2
-const part2: typeof part1 = (stacks): string => {
+const part2: typeof part1 = (inStacks): string => {
+  const stacks: Stacks = JSON.parse(JSON.stringify(inStacks));
+
+  const makeMove = ({from, to}: Omit<Instruction, 'amount'>) => {
+    const item = stacks[from].pop() as string;
+
+    stacks[to].push(item);
+
+    stacks[from] = stacks[from].filter(n => !!(n ?? '').trim());
+    stacks[to] = stacks[to].filter(n => !!(n ?? '').trim());
+  };
+
+  const execute = ({amount, from, to}: Instruction) => {
+    for (let i = 0; i < amount; i++) {
+      makeMove({from, to});
+    }
+  };
+
+  const executeLoop = () => {
+    for (let i = 0; i < instructions.length; i++) {
+      const instruction = instructions[i];
+      if (DEBUG) console.log(instruction)
+      const {amount, from, to} = instruction;
+      if (DEBUG) console.log(`Instruction ${i + 1}: move ${amount} from ${from + 1} to ${to + 1}`);
+      execute(instruction);
+      if (DEBUG) {
+        console.log('===========');
+        logStack(stacks);
+        console.log('===========');
+      }
+    }
+  }
+
+  if (DEBUG) {
+    logStack(stacks);
+  }
+  executeLoop();
   return getTopMost(stacks); 
 };
 
+if (DEBUG) console.log('\n\n\n');
 const part2Result = part2(originalStacks);
 console.log('Part 2:', part2Result)
