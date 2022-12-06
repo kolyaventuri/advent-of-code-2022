@@ -105,3 +105,4 @@ dist
 
 inputs/
 !inputs/.keep
+!inputs/*test.txt
