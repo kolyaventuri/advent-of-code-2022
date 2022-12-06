@@ -1,12 +1,6 @@
 import { loadInput } from "../utils/load-input";
 
 const input = loadInput(3);
-/* const input = `vJrwpWtwJgWrhcsFMMfFFhFp
-jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
-PmmdzqPrVvPwwTWBwg
-wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
-ttgJtRGJQctTZtZT
-CrZsJsPPZsGzwwsLwLmpwMDw`; */
 
 const sacks = input.split('\n').filter(n => !!n);
 

@@ -1,4 +1,8 @@
 const num = process.argv[2] ?? null;
+const isTest = process.argv[3] === 'test';
+if (isTest) {
+  process.env.IS_TEST = 'true';
+}
 
 if (num === null) {
   throw new Error('No puzzle provided');
