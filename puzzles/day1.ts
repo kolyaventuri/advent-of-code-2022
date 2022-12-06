@@ -1,7 +1,6 @@
-import fs from 'fs';
-import path from 'path';
+import { loadInput } from "../utils/load-input";
 
-const input = fs.readFileSync(path.join(__dirname, '../inputs/day1.txt')).toString();
+const input = loadInput(1); 
 
 const elves = input.split('\n\n');
 let totals: number[] = [];
