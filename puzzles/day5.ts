@@ -155,19 +155,15 @@ console.log('Part 1:', part1Result);
 const part2: typeof part1 = (inStacks): string => {
   const stacks: Stacks = JSON.parse(JSON.stringify(inStacks));
 
-  const makeMove = ({from, to}: Omit<Instruction, 'amount'>) => {
-    const item = stacks[from].pop() as string;
-
-    stacks[to].push(item);
-
-    stacks[from] = stacks[from].filter(n => !!(n ?? '').trim());
-    stacks[to] = stacks[to].filter(n => !!(n ?? '').trim());
-  };
-
   const execute = ({amount, from, to}: Instruction) => {
+    const buffer: string[] = [];
     for (let i = 0; i < amount; i++) {
-      makeMove({from, to});
+      const item = stacks[from].pop() as string;
+
+      buffer.unshift(item);
     }
+
+    stacks[to].push(...buffer);
   };
 
   const executeLoop = () => {
