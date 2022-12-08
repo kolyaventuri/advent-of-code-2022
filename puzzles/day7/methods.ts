@@ -76,7 +76,7 @@ const logTree = (tree: Node): void => {
   recursiveLogTree(currentNode);
 }
 
-export const part1 = (input: string): number => {
+const parseTree = (input: string): {tree: Node, dirSize: Record<string, number>} => {
   const lines = parseInput(input);
   let tree: Node | null; 
 
@@ -140,9 +140,29 @@ export const part1 = (input: string): number => {
 
   getDirSize();
 
+  return {tree: tree!, dirSize};
+}
+
+export const part1 = (input: string): number => {
+  const {dirSize} = parseTree(input); 
+
   const entries = Object.entries(dirSize);
   const lessThanMax = entries.filter(([name, size]) => size <= MAX_SIZE);
   const result = lessThanMax.map(([_, size]) => size).reduce((s = 0, i) => s += i);
 
   return result;
 }
+
+const MAX_SPACE =  70000000;
+const SPACE_NEEDED = 30000000;
+export const part2 = (input: string): number => {
+  const {dirSize} = parseTree(input);
+  const usedSpace = dirSize['/'];
+  const unusedSpace = MAX_SPACE - usedSpace;
+  const spaceToClear = SPACE_NEEDED - unusedSpace;
+
+  const enough = Object.values(dirSize).filter(size => size - spaceToClear >= 0);
+  const smallest = Math.min(...enough);
+
+  return smallest;
+} 
