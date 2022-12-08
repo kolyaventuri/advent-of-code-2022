@@ -11,7 +11,7 @@ type Output = {type: 'output', value: string};
 type Line = Command | Output;
 
 const parseInput = (input: string): Line[] => {
-  const _lines = input.split('\n')
+  const _lines = input.split('\n').filter(n => !!n);
   const lines: Line[] = [];
   for (const line of _lines) {
     let tmp: Line;
@@ -78,13 +78,10 @@ const logTree = (tree: Node): void => {
 
 export const part1 = (input: string): number => {
   const lines = parseInput(input);
-  let result = 0;
-
-  log(lines);
-
   let tree: Node | null; 
 
   let currentNode: Node | null = null; 
+  // Parse the tree from the command output
   for (const line of lines) {
     if (line.type === "command" && line.name === "cd") {
       const newNode: Directory = {type: 'dir', name: line.args[0], children: []};
@@ -93,10 +90,15 @@ export const part1 = (input: string): number => {
         currentNode = tree;
       } else if (line.args[0] === "..") {
         if (!currentNode?.parent) {
-          throw new Error('Cannot traverse upwards');
+          throw new Error(`Cannot traverse upwards from ${currentNode?.name}`);
         }
         currentNode = (currentNode as Directory).parent as Directory;
       } else {
+        const existing = (currentNode as Directory).children.find(child => child.name === newNode.name);
+        if (existing) {
+          currentNode = existing as Directory;
+          continue;
+        }
         newNode.parent = currentNode as Directory;
         (currentNode as Directory).children.push(newNode);
         currentNode = newNode;
@@ -107,12 +109,40 @@ export const part1 = (input: string): number => {
       if (data === 'dir') continue;
       const size = Number.parseInt(data, 10);
 
+      if ((currentNode as Directory)?.children.find(child => child.name === name)) continue;
       const newNode: File = {type: 'file', name, size};
-      currentNode?.children.push(newNode);
+      (currentNode as Directory)?.children.push(newNode);
     }
   }
 
   if (currentNode) logTree(currentNode);
+
+  while (currentNode?.parent) {
+    currentNode = currentNode.parent;
+  }
+
+  const dirSize: Record<string, number> = {};
+
+  const getDirSize = (directory: Directory = tree as Directory, name = (tree as Directory).name): number => {
+    let size = 0;
+    dirSize[name] = 0;
+    for (const node of directory.children) {
+      if (node.type === "file") {
+        size += node.size;
+      } else {
+        size += getDirSize(node, `${name}/${node.name}`);
+      }
+    }
+    
+    dirSize[name] += size;
+    return size;
+  };
+
+  getDirSize();
+
+  const entries = Object.entries(dirSize);
+  const lessThanMax = entries.filter(([name, size]) => size <= MAX_SIZE);
+  const result = lessThanMax.map(([_, size]) => size).reduce((s = 0, i) => s += i);
 
   return result;
 }

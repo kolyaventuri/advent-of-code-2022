@@ -23,7 +23,24 @@ $ ls
 4060174 j
 8033020 d.log
 5626152 d.ext
-7214296 k`;
+7214296 k
+$ ls
+4060174 j
+8033020 d.log
+5626152 d.ext
+7214296 k
+$ cd ..
+$ cd d
+$ ls
+4060174 j
+8033020 d.log
+5626152 d.ext
+7214296 k 
+dir a
+$ cd a
+$ ls
+14848514 b.txt
+`;
 
 test('(day7) (part1): Input returns the correct directory size', t => {
   const result = part1(input);
