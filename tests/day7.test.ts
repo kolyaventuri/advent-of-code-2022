@@ -1,5 +1,5 @@
 import test from 'ava';
-import {part1, part2} from '../puzzles/day7/methods';
+import {part1, part2} from '../puzzles/day7';
 
 // Adjusted input to account for some edge cases
 const input = `$ cd /

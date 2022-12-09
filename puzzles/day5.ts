@@ -1,4 +1,4 @@
-import {log} from '../../utils/logger';
+import {log} from '../utils/logger';
 
 type Instruction = {amount: number, from: number, to: number};
 

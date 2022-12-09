@@ -1,4 +1,4 @@
-import { log } from "../../utils/logger";
+import { log } from "../utils/logger";
 
 type Directory = {type: 'dir'; name: string; children: Node[]; parent?: Node;};
 type File = {type: 'file'; size: number; name: string; parent?: Node;}

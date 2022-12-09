@@ -1,5 +1,5 @@
 import test from 'ava';
-import {part1, part2} from '../puzzles/day6/methods';
+import {part1, part2} from '../puzzles/day6';
 
 const inputs: [string, number][] = [
   ['mjqjpqmgbljsphdztnvjfqwrcgsmlb', 7],

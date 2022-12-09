@@ -1,5 +1,5 @@
 import test from 'ava';
-import {calculateVisibility, getVisibility, scanDirection, part1, rotateGrid, generateGrid, flatMerge, getTotalVisible} from '../puzzles/day8/methods';
+import {getVisibility, scanDirection, part1, rotateGrid, generateGrid, flatMerge, getTotalVisible} from '../puzzles/day8';
 
 const testData =
 `30373

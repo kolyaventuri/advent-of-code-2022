@@ -1,5 +1,5 @@
 import test from 'ava';
-import {part1, part2} from '../puzzles/day5/methods';
+import {part1, part2} from '../puzzles/day5';
 
 const input = `    [D]    
 [N] [C]    

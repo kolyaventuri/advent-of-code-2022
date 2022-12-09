@@ -1,6 +1,6 @@
 import yargs from 'yargs/yargs';
-
 import {hideBin} from 'yargs/helpers';
+import { loadInput } from './load-input';
 
 const argv = yargs(hideBin(process.argv)).argv
 
@@ -22,7 +22,12 @@ if (num === null) {
 
 try {
   console.log(`===========\n[PUZZLE ${num}]\n===========\n\n`);
-  require(`../puzzles/day${num}`);
+  const {part1, part2} = require(`../puzzles/day${num}`);
+  const input = loadInput(num);
+
+  console.log('Part 1:', part1(input));
+  console.log('Part 2:', part2(input));
 } catch (error: unknown) {
+  console.warn(`You may not have anything written for puzzle ${num}!`);
   throw error;
 }

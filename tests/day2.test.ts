@@ -1,5 +1,5 @@
 import test from 'ava';
-import {part1, part2} from '../puzzles/day2/methods';
+import {part1, part2} from '../puzzles/day2';
 
 const input = `A Y
 B X
