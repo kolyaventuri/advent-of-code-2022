@@ -1,7 +1,3 @@
-import { loadInput } from "../utils/load-input";
-
-const input = loadInput(2);
-
 enum Play {
   ROCK = "ROCK",
   PAPER = "PAPER",
@@ -34,10 +30,6 @@ const determineOutcome = (them: Play, me: Play): Outcome =>{
   return Outcome.LOSS;
 };
 
-const rounds = input.split('\n').filter(n => !!n).map(round => 
-  round.split(' ')
-);
-
 // Part 1
 
 const mapping1 = {
@@ -50,16 +42,21 @@ const mapping1 = {
   Z: Play.SCISSORS
 };
 
-let score = 0;
-for (const round of rounds) {
-  const [them, me] = round.map(x => mapping1[x]) as [Play, Play];
+export const part1 = (input: string) => {
+  const rounds = input.split('\n').filter(n => !!n).map(round => 
+    round.split(' ')
+  );
 
-  const outcome = determineOutcome(them, me);
-  score += scores[me];
-  score += scores[outcome];
-}
+  let score = 0;
+  for (const round of rounds) {
+    const [them, me] = round.map(x => mapping1[x]) as [Play, Play];
 
-console.log('Part 1:', score);
+    const outcome = determineOutcome(them, me);
+    score += scores[me];
+    score += scores[outcome];
+  }
+  return score;
+};
 
 // Part 2
 const mapping2 = {
@@ -97,14 +94,21 @@ const getPlay = (them: Play, desired: Outcome): Play => {
   }
 };
 
-score = 0;
-for (const round of rounds) {
-  const [them, desired] = round.map(x => mapping2[x]) as [Play, Outcome];
+export const part2 = (input: string): number => {
+  const rounds = input.split('\n').filter(n => !!n).map(round => 
+    round.split(' ')
+  );
 
-  const me = getPlay(them, desired);
-  const outcome = determineOutcome(them, me);
-  score += scores[me];
-  score += scores[outcome];
+  let score = 0;
+  for (const round of rounds) {
+    const [them, desired] = round.map(x => mapping2[x]) as [Play, Outcome];
+
+    const me = getPlay(them, desired);
+    const outcome = determineOutcome(them, me);
+    score += scores[me];
+    score += scores[outcome];
+  }
+
+  return score;
 }
 
-console.log('Part 2:', score);
