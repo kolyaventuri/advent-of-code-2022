@@ -42,11 +42,11 @@ test('(day8:helper) #scanDirection can calculate up-facing visibility via rotati
 */
   const input = generateGrid(testData); 
   const expected = [
-    [true, true, true, true, true],    
-    [false, true, true, false, false],
-    [true, false, false, false, false],
-    [false, false, false, false, true],
-    [false, false, false, true, false]
+    [4, 1, 4, 8, 4],    
+    [-1, 5, 2, -6, -1],
+    [3, 0, -2, -4, -1],
+    [-3, -2, 0, -3, 6],
+    [-3, 0, -2, 2, -9]
   ];
 
   t.deepEqual(scanDirection(input, 'up'), expected);
@@ -62,11 +62,11 @@ test('(day8:helper) #scanDirection can calculate down-facing visibility via rota
 */
   const input = generateGrid(testData); 
   const expected = [
-    [false, false, false, false, false],
-    [false, false, false, false, false],
-    [true, false, false, false, false],
-    [false, false, true, false, true],
-    [true, true, true, true, true]
+    [-3, -5, -2, -2, -6],
+    [-4, 0, 0, -8, -7],
+    [3, 0, -2, -6, -7],
+    [0, -2, 2, -5, 9],
+    [4, 6, 4, 10, 1],
   ];
 
   t.deepEqual(scanDirection(input, 'down'), expected);
@@ -82,11 +82,11 @@ test('(day8:helper) #scanDirection can calculate right-facing visibility via rot
 */
   const input = generateGrid(testData); 
   const expected = [
-    [false, false, false, true, true],
-    [false, false, true, false, true],
-    [true, true, false, true, true],
-    [false, false, false, false, true],
-    [false, false, false, true, true]
+    [-4, -7, -4, 4, 4],
+    [-3, 0, 3, -1, 3],
+    [1, 2, 0, 1, 3],
+    [-6, -6, -4 , -5, 10],
+    [-6, -4, -6, 9, 1]
   ];
 
   t.deepEqual(scanDirection(input, 'right'), expected);
@@ -102,15 +102,16 @@ test('(day8:helper) #scanDirection can calculate left-facing visibility via rota
 */
   const input = generateGrid(testData); 
   const expected = [
-    [true, false, false, true, false],
-    [true, true, false, false, false],
-    [true, false, false, false, false],
-    [true, false, true, false, true],
-    [true, true, false, true, false]
+    [4, -3, 0, 4, -4],  
+    [3, 3, 0, -4, -3],
+    [7, -1, -3, -3, -4],
+    [4, 0, 2, -1, 4],
+    [4, 2, -2, 4, -9]
   ];
 
   t.deepEqual(scanDirection(input, 'left'), expected);
 });
+
 
 test('(day8:helper) #getVisibility calculates the total merged visiblity', t => {
   const input = [
@@ -140,32 +141,32 @@ test('(day8:helper) #generatedGrid reads in the grid correctly', t => {
 test('(day8:helper) #flatMerge merges the grids correctly', t => {
   const input = [
     [
-      [true, true, true, true, true],    
-      [false, true, true, false, false],
-      [true, false, false, false, false],
-      [false, false, false, false, true],
-      [false, false, false, true, false]
+      [4, 1, 4, 8, 4],    
+      [-1, 5, 2, -6, -1],
+      [3, 0, -2, -4, -1],
+      [-3, -2, 0, -3, 6],
+      [-3, 0, -2, 2, -9]
     ],
     [
-      [false, false, false, false, false],
-      [false, false, false, false, false],
-      [true, false, false, false, false],
-      [false, false, true, false, true],
-      [true, true, true, true, true]
+      [-3, -5, -2, -2, -6],
+      [-4, 0, 0, -8, -7],
+      [3, 0, -2, -6, -7],
+      [0, -2, 2, -5, 9],
+      [4, 6, 4, 10, 1],
     ],
     [
-      [false, false, false, true, true],
-      [false, false, true, false, true],
-      [true, true, false, true, true],
-      [false, false, false, false, true],
-      [false, false, false, true, true]
+      [-4, -7, -4, 4, 4],
+      [-3, 0, 3, -1, 3],
+      [1, 2, 0, 1, 3],
+      [-6, -6, -4 , -5, 10],
+      [-6, -4, -6, 9, 1]
     ],
     [
-      [true, false, false, true, false],
-      [true, true, false, false, false],
-      [true, false, false, false, false],
-      [true, false, true, false, true],
-      [true, true, false, true, false]
+      [4, -3, 0, 4, -4],  
+      [3, 3, 0, -4, -3],
+      [7, -1, -3, -3, -4],
+      [4, 0, 2, -1, 4],
+      [4, 2, -2, 4, -9]
     ]
   ];
   
@@ -181,6 +182,7 @@ test('(day8:helper) #flatMerge merges the grids correctly', t => {
 
   t.deepEqual(result, expected);
 });
+
 test('(day8:helper) #getTotalVisible gets the total visible (count of true)', t => {
   const input = [
     true, true, true, true, true,
@@ -209,3 +211,4 @@ test('(day8:part1) Returns the correct number of visible trees', t => {
   const result = part1(testData);
   t.is(result, 21);
 });
+

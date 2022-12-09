@@ -22,18 +22,18 @@ export const rotateGrid = <T>(grid: T[][]): T[][] => {
 }
 
 type Direction = 'up' | 'down' | 'left' | 'right';
-export const calculateVisibility = (trees: number[][], direction: 'left' | 'right'): boolean[][] => {
+export const calculateVisibility = (trees: number[][], direction: 'left' | 'right'): number[][] => {
   const visibility = new Array(trees.length).fill(new Array(trees[0].length));
 
   for (let i = 0; i < trees.length; i++) {
     const row = direction === 'right' ? [...trees[i]].reverse() : trees[i];
 
     let tallest = -1;
-    const newRow: boolean[] = [];
+    const newRow: number[] = [];
     for (let j = 0; j < row.length; j++) {
       const tree = row[j];
-      const isVisible = tree > tallest;
-      if (isVisible) tallest = tree;
+      const isVisible = tree - tallest;
+      if (isVisible > 0) tallest = tree;
       newRow[j] = isVisible;
     } 
     visibility[i] = direction === 'left' ? newRow : newRow.reverse();
@@ -41,7 +41,7 @@ export const calculateVisibility = (trees: number[][], direction: 'left' | 'righ
 
   return visibility;
 };
-export const scanDirection = (trees: number[][], direction: Direction): boolean[][] => {
+export const scanDirection = (trees: number[][], direction: Direction): number[][] => {
   if (direction === 'left' || direction === 'right') {
     return calculateVisibility(trees, direction);
   }
@@ -56,14 +56,15 @@ export const flatMerge = <T>(grids: Array<T[][]>): boolean[] => {
   const flattened = grids.map(g => g.flat());
   log(flattened);
 
-  let result: T[] = [];
+  let result: boolean[] = [];
   for (const list of flattened) {
     for (let i = 0; i < list.length; i++) {
-      result[i] ||= list[i];
+      result[i] ||= list[i] > 0;
     }
   }
 
-  return result.map(n => !!n);
+  log(result);
+  return result;
 };
 
 export const getVisibility = (trees: number[][]): boolean[] => {
