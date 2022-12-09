@@ -26,13 +26,17 @@ export const calculateVisibility = (trees: number[][], direction: 'left' | 'righ
   const visibility = new Array(trees.length).fill(new Array(trees[0].length));
 
   for (let i = 0; i < trees.length; i++) {
-    const row = trees[i];
-    const firstIndex = direction === 'left' ? 0 : row.length - 1;
-    const first = row[firstIndex];
-    visibility[i] = row.map((tree, index) => {
-      if (index === firstIndex) return true;
-      return tree - first > 0;
-    });
+    const row = direction === 'right' ? [...trees[i]].reverse() : trees[i];
+
+    let tallest = -1;
+    const newRow: boolean[] = [];
+    for (let j = 0; j < row.length; j++) {
+      const tree = row[j];
+      const isVisible = tree > tallest;
+      if (isVisible) tallest = tree;
+      newRow[j] = isVisible;
+    } 
+    visibility[i] = direction === 'left' ? newRow : newRow.reverse();
   }
 
   return visibility;
@@ -48,7 +52,7 @@ export const scanDirection = (trees: number[][], direction: Direction): boolean[
   return rotateGrid(result);
 };
 
-const flatMerge = <T>(grids: Array<T[][]>): boolean[] => {
+export const flatMerge = <T>(grids: Array<T[][]>): boolean[] => {
   const flattened = grids.map(g => g.flat());
   log(flattened);
 
@@ -79,14 +83,17 @@ export const getVisibility = (trees: number[][]): boolean[] => {
   return merged;
 };
 
+export const getTotalVisible = (visible: boolean[]): number =>
+  visible.map(n => (n ? 1 : 0) as number)
+    .reduce((s = 0, i) => s += i);
+
 export const part1 = (input: string): number => {
   const trees = generateGrid(input);
   log(trees);
   const visible = getVisibility(trees);
   log(visible);
 
-  const totalVisible: number = visible.map(n => (n ? 1 : 0) as number)
-    .reduce((s = 0, i) => s += i);
+  const totalVisible = getTotalVisible(visible); 
 
   log('total', totalVisible);
   
