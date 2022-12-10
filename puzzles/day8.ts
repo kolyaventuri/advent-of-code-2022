@@ -22,7 +22,7 @@ export const rotateGrid = <T>(grid: T[][]): T[][] => {
 }
 
 type Direction = 'up' | 'down' | 'left' | 'right';
-export const calculateVisibility = (trees: number[][], direction: 'left' | 'right'): number[][] => {
+export const calculateVisibility = (trees: number[][], direction: 'left' | 'right'): [number, number][][] => {
   const visibility = new Array(trees.length).fill(new Array(trees[0].length));
 
   for (let i = 0; i < trees.length; i++) {
@@ -41,7 +41,7 @@ export const calculateVisibility = (trees: number[][], direction: 'left' | 'righ
 
   return visibility;
 };
-export const scanDirection = (trees: number[][], direction: Direction): number[][] => {
+export const scanDirection = (trees: number[][], direction: Direction): [number, number][][] => {
   if (direction === 'left' || direction === 'right') {
     return calculateVisibility(trees, direction);
   }
@@ -59,7 +59,7 @@ export const flatMerge = <T>(grids: Array<T[][]>): boolean[] => {
   let result: boolean[] = [];
   for (const list of flattened) {
     for (let i = 0; i < list.length; i++) {
-      result[i] ||= list[i] > 0;
+      result[i] ||= list[i][0] > 0;
     }
   }
 
@@ -67,7 +67,7 @@ export const flatMerge = <T>(grids: Array<T[][]>): boolean[] => {
   return result;
 };
 
-export const getVisibility = (trees: number[][]): boolean[] => {
+export const getVisibility = (trees: number[][]) => {
   const left = scanDirection(trees, 'left');
   log('l', left);
   const right = scanDirection(trees, 'right');
@@ -81,7 +81,7 @@ export const getVisibility = (trees: number[][]): boolean[] => {
   const merged = flatMerge([left, right, up, down]);
   log('merged', merged);
 
-  return merged;
+  return {merged, up, down, left, right};
 };
 
 export const getTotalVisible = (visible: boolean[]): number =>
@@ -94,7 +94,7 @@ export const part1 = (input: string): number => {
   const visible = getVisibility(trees);
   log(visible);
 
-  const totalVisible = getTotalVisible(visible); 
+  const totalVisible = getTotalVisible(visible.merged); 
 
   log('total', totalVisible);
   
