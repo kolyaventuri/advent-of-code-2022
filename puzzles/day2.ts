@@ -49,7 +49,7 @@ export const part1 = (input: string) => {
 
   let score = 0;
   for (const round of rounds) {
-    const [them, me] = round.map(x => mapping1[x]) as [Play, Play];
+    const [them, me] = round.map(x => mapping1[x as keyof typeof mapping1]) as [Play, Play];
 
     const outcome = determineOutcome(them, me);
     score += scores[me];
@@ -101,7 +101,7 @@ export const part2 = (input: string): number => {
 
   let score = 0;
   for (const round of rounds) {
-    const [them, desired] = round.map(x => mapping2[x]) as [Play, Outcome];
+    const [them, desired] = round.map(x => mapping2[x as keyof typeof mapping2]) as [Play, Outcome];
 
     const me = getPlay(them, desired);
     const outcome = determineOutcome(them, me);

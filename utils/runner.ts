@@ -4,10 +4,12 @@ import yargs from 'yargs/yargs';
 import {hideBin} from 'yargs/helpers';
 import { loadInput } from './load-input';
 
-const argv = yargs(hideBin(process.argv)).argv
+const argv = yargs(hideBin(process.argv)).options({
+  test: { type: 'boolean', default: false, alias: 't' },
+  debug: { type: 'boolean', default: false, alias: 'd'},
+}).parseSync();
 
-// @ts-expect-error
-const num = argv._[0];
+const num = argv._[0] as string;
 const isTest = argv.test || argv.t; 
 const isDebug = argv.debug || argv.d;
 if (isTest) {
