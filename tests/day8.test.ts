@@ -1,5 +1,5 @@
 import test from 'ava';
-import {getVisibility, scanDirection, part1, rotateGrid, generateGrid, flatMerge, getTotalVisible} from '../puzzles/day8';
+import {getVisibility, scanDirection, part1, part2, rotateGrid, generateGrid, flatMerge, getTotalVisible, getViewDistance, getScenicScores} from '../puzzles/day8';
 
 const testData =
 `30373
@@ -212,3 +212,99 @@ test('(day8:part1) Returns the correct number of visible trees', t => {
   t.is(result, 21);
 });
 
+test('(day8:helper) #getViewDistance generates the view distance for the up direction', t => {
+  const input = generateGrid(`012
+503
+722`);
+
+  const result = getViewDistance(input, 'up'); 
+  const expected = [
+    [1, 2, 1],
+    [1, 1, 1],
+    [0, 0, 0]
+  ];
+
+  t.deepEqual(result, expected);
+});
+
+test('(day8:helper) #getViewDistance generates the view distance for the down direction', t => {
+  const input = generateGrid(`002
+598
+746`);
+
+  const result = getViewDistance(input, 'down'); 
+  const expected = [
+    [0, 0, 0],
+    [1, 1, 1],
+    [2, 1, 1]
+  ];
+
+  t.deepEqual(result, expected);
+});
+
+test('(day8:helper) #getViewDistance generates the view distance for the left direction', t => {
+  const input = generateGrid(`102
+521
+786`);
+
+  const result = getViewDistance(input, 'left'); 
+  const expected = [
+    [2, 1, 0],
+    [2, 1, 0],
+    [1, 1, 0]
+  ];
+
+  t.deepEqual(result, expected);
+});
+
+test('(day8:helper) #getViewDistance generates the view distance for the right direction', t => {
+  const input = generateGrid(`002
+521
+784`);
+
+  const result = getViewDistance(input, 'right'); 
+  const expected = [
+    [0, 1, 2],
+    [0, 1, 1],
+    [0, 1, 1]
+  ];
+
+  t.deepEqual(result, expected);
+});
+
+test('(day8:helper) #getScenicScores generates the scenic score of each tree', t => {
+  const input = generateGrid(`0012
+5211
+7894
+9641`);
+
+  const result = getScenicScores(input);
+  const expected = [
+    [0, 0, 0, 0],
+    [0, 2, 1, 0],
+    [0, 2, 4, 0],
+    [0, 0, 0, 0]
+  ];
+
+  t.deepEqual(result, expected);
+});
+
+test('(day8:helper) #getScenicScores returns the right data for the real data', t => {
+/*
+30373
+25512
+65332
+33549
+35390
+*/
+  const trees = generateGrid(testData);
+  const scores = getScenicScores(trees);
+
+  t.is(scores[3][2], 8);
+});
+
+test('(day8:part2) Returns the highest scenic score', t => {
+  const result = part2(testData);
+
+  t.is(result, 8);
+});

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "ava ./tests/**/*.test.ts",
-    "puzzle": "ts-node -T ./utils/runner.ts"
+    "puzzle": "ts-node -T ./utils/runner.ts",
+    "lint:typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
