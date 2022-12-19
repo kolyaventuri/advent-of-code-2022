@@ -25,8 +25,17 @@ const runPuzzle = (puzzle: string) => {
   const {part1, part2} = require(`../puzzles/day${puzzle}`);
   const input = loadInput(puzzle);
 
-  console.log('Part 1:', part1(input));
-  console.log('Part 2:', part2(input));
+  if (part1) {
+    console.log('Part 1:', part1(input));
+  } else {
+    console.warn(`!! No part2 method exported for puzzle ${puzzle}`);
+  }
+
+  if (part2) {
+    console.log('Part 2:', part2(input));
+  } else {
+    console.warn(`!! No part2 method exported for puzzle ${puzzle}`);
+  }
 };
 
 if (!num || Number.isNaN(Number.parseInt(num, 10))) {
