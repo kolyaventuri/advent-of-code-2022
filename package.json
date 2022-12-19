@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "ava ./tests/**/*.test.ts",
+    "test": "run(){ ava ./tests/**/day$1.test.ts; }; run",
+    "test:debug": "run(){ ava ./tests/**/day$1.test.ts --serial --watch --fail-fast; }; run",
+    "test:all": "ava ./tests/**/*.test.ts", 
     "puzzle": "ts-node -T ./utils/runner.ts",
     "lint:typecheck": "tsc --noEmit"
   },
