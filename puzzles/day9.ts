@@ -233,3 +233,23 @@ export const part1 = (input: string): number => {
 
   return new Set(visitedPositions).size;
 };
+
+export const part2 = (input: string): number => {
+  const moves = parseMoves(input);
+  const visitedPositions: string[] = ['0,0'];
+  const chain = generateChain(10);
+
+  log(moves);
+
+  for (const [direction, amount] of moves) {
+    log(`Move ${direction} ${amount} times`);
+    for (let i = 0; i < amount; i++) {
+      const tail = performMove(chain, direction);
+      logMove(chain, {w: 26, h: 21}, {x: 12, y: 16});
+      visitedPositions.push(`${tail.x},${tail.y}`);
+    }
+  }
+
+  return new Set(visitedPositions).size;
+};
+

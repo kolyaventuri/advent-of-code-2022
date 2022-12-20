@@ -1,5 +1,5 @@
 import test from 'ava';
-import { part1, shouldMove, getRelativePosition } from '../puzzles/day9';
+import { part1, part2, shouldMove, getRelativePosition } from '../puzzles/day9';
 
 const testData = 
 `R 4
@@ -15,6 +15,22 @@ test('(day9:part1) Returns the correct number of tail positions visited', t => {
   const result = part1(testData);
 
   t.is(result, 13);
+});
+
+const testData2 =
+`R 5
+U 8
+L 8
+D 3
+R 17
+D 10
+L 25
+U 20`;
+
+test('(day9:part2) Returns the correct number of tail positions visited', t => {
+  const result = part2(testData2);
+
+  t.is(result, 36);
 });
 
 /*
@@ -104,4 +120,3 @@ test('(day9:helper) #getRelativePosition returns the correct position', t => {
     t.is(result, expected, `Expected ${expected} for head @ ${JSON.stringify(head)} and tail @ ${JSON.stringify(tail)}`);
   }
 });
-
