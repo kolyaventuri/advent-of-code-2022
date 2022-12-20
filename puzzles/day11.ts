@@ -12,9 +12,8 @@ type WorryTest = {
 }
 
 type Monkey = {
-  starting: number[];
   holding: number[];
-  totalHeld: number;
+  timesInspected: number;
   operation: Operation;
   test: WorryTest;
 }
@@ -28,7 +27,7 @@ export const parseInstructions = (input: string): Monkey[] => {
   for (const line of lines) {
     if (line.startsWith('monkey'))  {
       log('Creating new monkey')
-      monkey = {totalHeld: 0};
+      monkey = {timesInspected: 0};
       i = -1;
       continue;
     }
@@ -40,7 +39,7 @@ export const parseInstructions = (input: string): Monkey[] => {
         {
           const right = line.split(':')[1].trim();
           const parts = right.split(',').map(n => Number.parseInt(n, 10));
-          monkey.starting = monkey.holding = parts;
+          monkey.holding = parts;
           log('--Starting with', parts);
           break;
         }
@@ -96,6 +95,57 @@ export const parseInstructions = (input: string): Monkey[] => {
   return monkeys;
 }
 
+export const doRound = (monkeys: Monkey[]): Monkey[] => {
+  for (let i = 0; i < monkeys.length; i++) {
+    let monkey = monkeys[i];
+    log(`Monkey ${i}, holding ${monkey.holding}`);
+
+    for (let j = 0; j < monkey.holding.length; j++) {
+      monkeys[i].timesInspected += 1;
+      let item = monkey.holding[j];
+      log(`  Holding item with worry ${item}`);
+
+      const {operation, value} = monkey.operation;
+      if (operation === 'add') {
+        item += value === 'old' ? item : value;
+      } else if (operation === 'multiply') {
+        item *= value === 'old' ? item : value;
+      }
+
+      log(`    ${operation} ${value} to item, new worry ${item}`);
+      item = ~~(item / 3);
+      log(`    Monkey is bored, divide by 3, new worry ${item}`);
+
+      const testPassed = item % monkey.test.divisible === 0;
+      let toPass = monkey.test.yes;
+      if (testPassed) {
+        log(`    Was divisible by ${monkey.test.divisible}, passing to monkey ${monkey.test.yes}`)
+      } else {
+        log(`    Was not divisible by ${monkey.test.divisible}, passing to monkey ${monkey.test.no}`)
+        toPass = monkey.test.no;
+      }
+
+      monkeys[toPass].holding.push(item);
+      monkeys[i].holding[j] = -1; // Mark as no longer holding
+    }
+
+    monkeys[i].holding = monkeys[i].holding.filter(n => n !== -1);
+  }
+
+  return monkeys;
+}
+
 export const part1 = (input: string): number => {
-  return 0;
+  let monkeys = parseInstructions(input);
+
+  for (let i = 0; i < 20; i++) {
+    monkeys = doRound(monkeys);
+  }
+
+  log(monkeys)
+  const ranked = monkeys.sort((a, b) => b.timesInspected - a.timesInspected); 
+  const [one, two] = ranked;
+  log(`Top two monkeys inspected things ${one.timesInspected} and ${two.timesInspected} times`);
+
+  return one.timesInspected * two.timesInspected;
 };
