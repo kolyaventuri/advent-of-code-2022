@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import test from 'ava';
-import {part1, parseInstructions, doRound} from '../puzzles/day11';
+import {part1, part2, parseInstructions, doRound, getMod} from '../puzzles/day11';
 
 const testData = fs.readFileSync(path.join(__dirname, '../inputs/day11.test.txt')).toString();
 
@@ -67,7 +67,7 @@ test('(day11:helper) #parseInstructions can parse the input', t => {
 
 test('(day11:helper) #doRound performs the moves for all monkeys for that round', t => {
   const monkeys = parseInstructions(testData);
-  const result = doRound(monkeys);
+  const result = doRound(monkeys, getMod(monkeys));
 
   t.deepEqual(result[0], {
     holding: [20, 23, 27, 26],
@@ -131,3 +131,10 @@ test('(day11:part1) Returns the correct amount of monkey business after 20 round
 
   t.is(result, 10605);
 });
+
+test('(day11:part2) Returns the correct amount of monkey business after 10,000 rounds', t => {
+  const result = part2(testData);
+
+  t.is(result, 2713310158);
+});
+

@@ -95,7 +95,7 @@ export const parseInstructions = (input: string): Monkey[] => {
   return monkeys;
 }
 
-export const doRound = (monkeys: Monkey[]): Monkey[] => {
+export const doRound = (monkeys: Monkey[], mod: number, div3 = true): Monkey[] => {
   for (let i = 0; i < monkeys.length; i++) {
     let monkey = monkeys[i];
     log(`Monkey ${i}, holding ${monkey.holding}`);
@@ -113,8 +113,19 @@ export const doRound = (monkeys: Monkey[]): Monkey[] => {
       }
 
       log(`    ${operation} ${value} to item, new worry ${item}`);
-      item = ~~(item / 3);
-      log(`    Monkey is bored, divide by 3, new worry ${item}`);
+      if (div3) {
+        item = ~~(item / 3);
+        log(`    Monkey is bored, divide by 3, new worry ${item}`);
+      }
+
+      if (!Number.isFinite(item)) {
+        throw new Error(`Worry value is no longer finite, aborting. Got ${item}`);
+      }
+
+      if (item > mod) {
+        log(`    Worry is too big, subtracting the mod`)
+        item = item % mod;
+      }
 
       const testPassed = item % monkey.test.divisible === 0;
       let toPass = monkey.test.yes;
@@ -135,11 +146,23 @@ export const doRound = (monkeys: Monkey[]): Monkey[] => {
   return monkeys;
 }
 
+export const getMod = (monkeys: Monkey[]): number => {
+  const divisors = monkeys.map((monkey: Monkey): number => monkey.test.divisible);
+
+  let product = 1;
+  for (const divisor of divisors) {
+    product *= divisor;
+  }
+
+  return product;
+};
+
 export const part1 = (input: string): number => {
   let monkeys = parseInstructions(input);
+  const mod = getMod(monkeys);
 
   for (let i = 0; i < 20; i++) {
-    monkeys = doRound(monkeys);
+    monkeys = doRound(monkeys, mod);
   }
 
   log(monkeys)
@@ -149,3 +172,20 @@ export const part1 = (input: string): number => {
 
   return one.timesInspected * two.timesInspected;
 };
+
+export const part2 = (input: string): number => {
+  let monkeys = parseInstructions(input);
+  const mod = getMod(monkeys);
+
+  for (let i = 0; i < 10000; i++) {
+    monkeys = doRound(monkeys, mod, false);
+  }
+
+  log(monkeys)
+  const ranked = monkeys.sort((a, b) => b.timesInspected - a.timesInspected); 
+  const [one, two] = ranked;
+  log(`Top two monkeys inspected things ${one.timesInspected} and ${two.timesInspected} times`);
+
+  return one.timesInspected * two.timesInspected;
+};
+
