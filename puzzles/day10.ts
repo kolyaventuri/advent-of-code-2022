@@ -60,3 +60,49 @@ export const part1 = (input: string): number => {
 
   return sum;
 }
+
+const ON = '#';
+const OFF = '.';
+const WIDTH = 40;
+const HEIGHT = 6;
+
+export const part2 = (input: string): string => {
+  let register = 1;
+  const cycles: number[] = [];
+  let line = 0;
+  const out: string[] = [''];
+
+  const instructions = parseInput(input);
+
+  const doCycle = () => {
+    const validPositions = [register - 1, register, register + 1];
+    cycles.push(register);
+
+    if (validPositions.includes(out[line].length)) {
+      out[line] += ON;
+    } else {
+      out[line] += OFF;
+    }
+
+    if (out[line].length === WIDTH && line + 1 < HEIGHT) {
+      line += 1;
+      out.push('');
+    }
+  };
+
+  for (let i = 0; i < instructions.length; i++) {
+    const [instruction, arg] = instructions[i];
+
+    doCycle();
+
+    if (instruction === 'addx') {
+      doCycle();
+      register += arg;
+    }
+  }
+
+  const result = out.join('\n');
+  log(result);
+  log(out[0].length, 'x', out.length);
+  return '\n' + result;
+};
