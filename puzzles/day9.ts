@@ -59,15 +59,22 @@ export const shouldMove = (direction: Direction, position: number): boolean => {
 
 const getSize = (number: number): number => number < 0 ? -1 : 1;
 
-const getMaxDelta = (position: {head: Position; tail: Position}) => Math.max(
-  Math.abs(position.head.x - position.tail.x),
-  Math.abs(position.head.y - position.tail.y),
-);
+const checkForUnlink = (positions: Position[]): boolean => {
+  for (let i = 1; i < positions.length; i++) {
+    const current = positions[i];
+    const prev = positions[i - 1];
+    const delta = Math.max(
+      Math.abs(current.x - prev.x),
+      Math.abs(current.y - prev.y)
+    );
 
-const getMove = (currentPosition: {head: Position, tail: Position}, direction: Direction) => {
-  let x = 0;
-  let y = 0;
+    if (delta > 1) return true;
+  }
 
+  return false;
+}
+
+const getMove = (chain: Position[], direction: Direction) => {
   let head: Position = {x: 0, y: 0};
   switch (direction) {
     case 'up':
@@ -84,33 +91,43 @@ const getMove = (currentPosition: {head: Position, tail: Position}, direction: D
       break;
   } 
 
-  const newHeadX = currentPosition.head.x + head.x;
-  const dX = newHeadX - currentPosition.tail.x;
+  const deltas: Position[] = [head];
+  for (let i = 1; i < chain.length; i++) {
+    let x = 0;
+    let y = 0;
 
-  const newHeadY = currentPosition.head.y + head.y;
-  const dY = newHeadY - currentPosition.tail.y;
+    const current = chain[i];
+    const previous = chain[i - 1];
+    const lastD = deltas[i - 1];
 
-  const absDX = Math.abs(dX);
-  const absDY = Math.abs(dY);
+    const prevX = previous.x + lastD.x;
+    const prevY = previous.y + lastD.y;
 
-  if (absDX > 1) {
-    x = 1 * getSize(dX);
-    if (absDY === 1) {
-      y = 1 * getSize(dY);
-    }
-  }
+    const dX = prevX - current.x;
+    const dY = prevY - current.y;
 
-  if (absDY > 1) {
-    y = 1 * getSize(dY);
-    if (absDX === 1) {
+    const absDX = Math.abs(dX);
+    const absDY = Math.abs(dY);
+
+    if (absDX > 1) {
       x = 1 * getSize(dX);
+      if (absDY === 1) {
+        y = 1 * getSize(dY);
+      }
     }
-  }
 
-  return {
-    head,
-    tail: {x, y}
-  };
+    if (absDY > 1) {
+      y = 1 * getSize(dY);
+      if (absDX === 1) {
+        x = 1 * getSize(dX);
+      }
+    }
+
+    log(`Move link ${i + 1} by`, {x, y})
+    deltas.push({x, y});
+  } 
+
+  return deltas;
 }
 
 const positionMap: Record<string, number> = {
@@ -132,27 +149,34 @@ export const getRelativePosition = (head: Position, tail: Position): number => {
   return positionMap[`${dx}${dy}`];
 };
 
-const logMove = (currentPosition: {head: Position, tail: Position}): void => {
-  const {
-    head: {x: hX, y: hY},
-    tail: {x: tX, y: tY}
-  } = currentPosition;
+type Size = {w: number; h: number};
+const logMove = (inChain: Position[], size: Size, origin: Position): void => {
+  const chain = [...inChain]; 
+  const head = chain[0];
+  const parts = chain.slice(1, chain.length - 1);
+  const tail = chain[chain.length - 1];
+  log(chain)
+
+  const {x: hX, y: hY} = head;
+  const {x: tX, y: tY} = tail;
 
   log(tY, tX);
   const rows: string[] = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < size.h; i++) {
     const out: string[] = [];
-    for (let j = 0; j < 6; j++) {
+    for (let j = 0; j < size.w; j++) {
+      let piece = '.';
       if (i === tY && j === tX) {
-        out.push('T');
-        continue;
-      } 
-      if (i === hY && j === hX) {
-        out.push('H');
-        continue;
+        piece = chain.length === 2 ? 'T' : (chain.length - 1).toString();
       }
 
-      out.push('.');
+      // TODO: Logic for rendering longer chains
+
+      if (i === hY && j === hX) {
+        piece = 'H';
+      }
+
+      out.push(piece);
     }
     rows.unshift(out.join(' '));
   }
@@ -160,50 +184,50 @@ const logMove = (currentPosition: {head: Position, tail: Position}): void => {
   log(rows.join('\n'));
 };
 
+const performMove = (chain: Position[], direction: Direction): Position => {
+  const deltas = getMove(chain, direction);
+  log('Deltas', deltas)
+
+  log('before', chain)
+  for (let j = 0; j < deltas.length; j++) {
+    chain[j] = {
+      x: chain[j].x + deltas[j].x,
+      y: chain[j].y + deltas[j].y,
+    }
+  }
+
+  log('after', chain);
+
+  const maxDelta = checkForUnlink(chain);
+  if (maxDelta) {
+    console.log(chain);
+    throw new Error('Invalid position! Link in chain is detached');
+  }
+
+  const tail = chain[chain.length - 1];
+
+  return tail;
+}; 
+
+const generateChain = (count: number): Position[] => {
+  log(`Generating chain of length ${count}`);
+
+  return new Array(count).fill({x: 0, y: 0});
+};
+
 export const part1 = (input: string): number => {
   const moves = parseMoves(input);
   const visitedPositions: string[] = ['0,0'];
-  const currentPosition: {
-    head: Position;
-    tail: Position;
-  } = {
-    head: {
-      x: 0,
-      y: 0
-    }, 
-    tail: {
-      x: 0,
-      y: 0
-    }
-  };
+  const chain = generateChain(2);
 
   log(moves);
 
-  logMove(currentPosition);
   for (const [direction, amount] of moves) {
     log(`Move ${direction} ${amount} times`);
-    for (let i = 0; i < amount; i++) { 
-      const delta = getMove(currentPosition, direction);
-
-      currentPosition.head.x += delta.head.x;
-      currentPosition.head.y += delta.head.y;
-      currentPosition.tail.x += delta.tail.x;
-      currentPosition.tail.y += delta.tail.y;
-
-      const maxDelta = getMaxDelta(currentPosition);
-      if (maxDelta > 1) {
-        console.log(currentPosition);
-        console.log('Max delta', maxDelta);
-        throw new Error('Invalid position! Tail is detached');
-      }
-
-
-      log('New');
-      logMove(currentPosition);
-      //log(`--Head: ${currentPosition.head.x}, ${currentPosition.head.y}`);
-      //log(`--Tail: ${currentPosition.tail.x}, ${currentPosition.tail.y}`);
-
-      visitedPositions.push(`${currentPosition.tail.x},${currentPosition.tail.y}`);
+    for (let i = 0; i < amount; i++) {
+      const tail = performMove(chain, direction);
+      logMove(chain, {w: 6, h: 5}, {x: 0, y: 5});
+      visitedPositions.push(`${tail.x},${tail.y}`);
     }
   }
 
