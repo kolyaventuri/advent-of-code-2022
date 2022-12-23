@@ -1,5 +1,5 @@
 import test from 'ava';
-import {part1 , parseHeightMap, getSurroundingTiles} from '../puzzles/day12';
+import {part1, part2, parseHeightMap, getSurroundingTiles} from '../puzzles/day12';
 
 const testData = 
 `Sabqponm
@@ -37,9 +37,14 @@ test('(day12:helper) #getSurroundingTiles given a map, can find the surrouding v
 test('(day12:helper) #parseHeightMap can parse the start and end nodes', t => {
   const {graph, start, end} = parseHeightMap(testData);
   console.log(graph)
-  t.is(start, 0);
+  t.deepEqual(start, [0]);
   t.is(end, 21);
+});
 
+test('(day12:helper) #parseHeightMap can parse ALL possible start and end nodes', t => {
+  const {start, end} = parseHeightMap(testData, true);
+  t.deepEqual(start, [0, 1, 8, 16, 24, 32]);
+  t.is(end, 21);
 });
 
 
@@ -48,3 +53,10 @@ test('(day12:part1) Returns the correct number of steps', t => {
 
   t.is(result, 31);
 });
+
+test('(day12:part2) Returns the correct number of steps, for all possible starting points', t => {
+  const result = part2(testData);
+
+  t.is(result, 29);
+});
+

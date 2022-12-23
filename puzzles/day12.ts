@@ -3,7 +3,7 @@ import { log } from "../utils/logger";
 type GraphNode = [number, number];
 type GraphResult = {
   graph: Graph<number>;
-  start: number;
+  start: number[];
   end: number;
 }
 
@@ -93,12 +93,13 @@ class Graph<T extends number> {
   }
 }
 
-export const parseHeightMap = (input: string): GraphResult => {
+export const parseHeightMap = (input: string, allPossible = false): GraphResult => {
   const lines = input.split('\n').map(n => n.trim()).filter(n => !!n);
   
   const simpleGraph: GraphNode[] = [];
   const map: number[][] = [];
-  let start = 0;
+  let start: Set<number> = new Set<number>();
+  start.add(0);
   let end = 0;
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -106,9 +107,9 @@ export const parseHeightMap = (input: string): GraphResult => {
       const tile = lines[i][j];
       let value = tile.charCodeAt(0) - 96;
       
-      if (tile === 'S') {
+      if (tile === 'S' || (allPossible && value === 1)) {
         value = 1;
-        start = (line.length * i) + j;
+        start.add((line.length * i) + j);
       } else if (tile === 'E') {
         value = 26;
         end = (line.length * i) + j;
@@ -160,7 +161,7 @@ export const parseHeightMap = (input: string): GraphResult => {
 
   return {
     graph,
-    start,
+    start: Array.from(start),
     end
   };
 }
@@ -189,6 +190,17 @@ export const part1 = (input: string): number => {
   log('Start:', start);
   log('End:', end);
 
-  const result = graph.bfs(start, end);
+  const result = graph.bfs(start[0], end);
   return result;
 }
+
+export const part2 = (input: string): number => {
+  const {graph, start, end} = parseHeightMap(input, true);
+
+  log('Start:', start);
+  log('End:', end);
+
+  const paths = start.map(root => graph.bfs(root, end)).filter(n => n > 0);
+  const result = Math.min(...paths);
+  return result;
+};
