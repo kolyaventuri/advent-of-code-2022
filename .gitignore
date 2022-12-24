@@ -105,3 +105,6 @@ dist
 
 inputs/*
 !inputs/*test.txt
+
+validators/*
+!validators/sample.json

@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-export const loadInput = (day: number | string): string => {
-  const fileName = process.env.IS_TEST ? `day${day}-test` : `day${day}`; 
+export const loadInput = (day: number | string, isTest = false): string => {
+  const fileName = process.env.IS_TEST || isTest ? `day${day}.test` : `day${day}`; 
   try {
     const data = fs.readFileSync(path.join(__dirname, `../inputs/${fileName}.txt`)).toString();
     const parts = data.split('\n');

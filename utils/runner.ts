@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import yargs from 'yargs/yargs';
+import chalk from 'chalk';
 import {hideBin} from 'yargs/helpers';
 import { loadInput } from './load-input';
 
@@ -20,19 +21,83 @@ if (isDebug) {
   process.env.IS_DEBUG = 'true';
 }
 
+type Validator = {
+  low: number[],
+  high: number[],
+  wrong: number[],
+};
+type Validators = {
+  part1: Validator;
+  part2: Validator;
+}
+
+const validate = (validator: Validator, result: number) => {
+  if (validator.low.length > 0) {
+    const max = Math.max(...validator.low);
+    if (result <= max) {
+      console.warn(chalk.red(`!! According to your previous answers, ${chalk.bold.green(result)} is too low!`));
+      console.warn(`The answer must be ${chalk.bold('greater')} than ${chalk.bold(max)}`);
+    }
+  }
+  if (validator.high.length > 0) {
+    const min = Math.min(...validator.low);
+    if (result >= min) {
+      console.warn(chalk.red(`!! According to your previous answers, ${chalk.bold.green(result)} is too high!`));
+      console.warn(`The answer must be ${chalk.bold('less')} than ${chalk.bold(min)}`);
+    }
+  }
+
+  if (validator.wrong.length > 0) {
+    const exists = validator.wrong.some(n => n === result);
+    if (exists) {
+      console.warn(chalk.red(`!! According to your previous answers, ${chalk.bold.green(result)} was flagged wrong!`));
+      console.error(`The answer likely can ${chalk.bold('not')} be ${chalk.bold(result)}`);
+    }
+  }
+}
+
 const runPuzzle = (puzzle: string) => {
   console.log(`===========\n[PUZZLE ${puzzle}]\n===========\n\n`);
   const {part1, part2} = require(`../puzzles/day${puzzle}`);
   const input = loadInput(puzzle);
+  const validators: Validators = {
+    part1: {
+      low: [],
+      high: [],
+      wrong: []
+    },
+    part2: {
+      low: [],
+      high: [],
+      wrong: []
+    }
+  };
+  try {
+    const data = require(`../validators/day${puzzle}`);
+    validators.part1.low = data.part1?.low ?? [];
+    validators.part2.low = data.part2?.low ?? [];
+
+    validators.part1.high = data.part1?.high ?? [];
+    validators.part2.high = data.part2?.high ?? [];
+
+    validators.part1.wrong = data.part1?.wrong ?? [];
+    validators.part2.wrong = data.part2?.wrong ?? [];
+  } catch (error) {
+    console.error(error)
+  }
 
   if (part1) {
-    console.log('Part 1:', part1(input));
+    const part1res = part1(input);
+    console.log('Part 1:', part1res);
+    validate(validators.part1, part1res);
   } else {
-    console.warn(`!! No part2 method exported for puzzle ${puzzle}`);
+    console.warn(`!! No part1 method exported for puzzle ${puzzle}`);
   }
 
   if (part2) {
-    console.log('Part 2:', part2(input));
+    const part2res = part2(input);
+    console.log('Part 2:', part2res);
+    validate(validators.part2, part2res);
   } else {
     console.warn(`!! No part2 method exported for puzzle ${puzzle}`);
   }

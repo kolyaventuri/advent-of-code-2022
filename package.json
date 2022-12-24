@@ -6,7 +6,7 @@
   "scripts": {
     "test": "run(){ ava ./tests/**/day$1.test.ts; }; run",
     "test:debug": "run(){ IS_DEBUG=true ava ./tests/**/day$1.test.ts --serial --watch --fail-fast; }; run",
-    "test:all": "ava ./tests/**/*.test.ts", 
+    "test:all": "ava ./tests/**/*.test.ts",
     "puzzle": "ts-node -T ./utils/runner.ts",
     "lint:typecheck": "tsc --noEmit"
   },
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/yargs": "^17.0.16",
     "ava": "^3.15.0",
+    "chalk": "^4.1.2",
     "esm": "^3.2.25",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.3",
