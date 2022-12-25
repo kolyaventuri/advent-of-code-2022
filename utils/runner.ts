@@ -25,6 +25,7 @@ type Validator = {
   low: number[],
   high: number[],
   wrong: number[],
+  correct: number | null
 };
 type Validators = {
   part1: Validator;
@@ -54,6 +55,11 @@ const validate = (validator: Validator, result: number) => {
       console.error(`The answer likely can ${chalk.bold('not')} be ${chalk.bold(result)}`);
     }
   }
+
+  if (validator.correct !== null && validator.correct !== result) {
+    console.warn(chalk.red(`!! According to your previous answers, ${chalk.bold.green(validator.correct)} was the correct answer!`));
+    console.error(`The answer can not possibly be ${chalk.bold(result)}`);
+  }
 }
 
 const runPuzzle = (puzzle: string) => {
@@ -64,12 +70,14 @@ const runPuzzle = (puzzle: string) => {
     part1: {
       low: [],
       high: [],
-      wrong: []
+      wrong: [],
+      correct: null
     },
     part2: {
       low: [],
       high: [],
-      wrong: []
+      wrong: [],
+      correct: null
     }
   };
   try {
@@ -82,6 +90,9 @@ const runPuzzle = (puzzle: string) => {
 
     validators.part1.wrong = data.part1?.wrong ?? [];
     validators.part2.wrong = data.part2?.wrong ?? [];
+
+    validators.part1.correct = data.part1?.correct ?? null;
+    validators.part2.correct = data.part2?.correct ?? null;
   } catch (error) {
     console.error(error)
   }

@@ -1,6 +1,6 @@
 import { loadInput } from '../utils/load-input';
 import test from 'ava';
-import {part1, parseInput, validatePair} from '../puzzles/day13';
+import {part1, part2, parseInput, validatePair, getPacketValidity, sortPackets, getArrayDepth} from '../puzzles/day13';
 
 const input = 
 `[1,1,3,1,1]
@@ -77,7 +77,7 @@ test('#validatePair returns true for a bunch of 0s', t => {
   t.true(result);
 });
 
-test.skip('#validatePair test', t => {
+test('#validatePair test', t => {
   const data =
 `[[2],[7]]
 [[2, 6]]`;
@@ -122,4 +122,53 @@ test('(day13:part1) Returns the correct sum of indicies', t => {
   const result = part1(testData);
 
   t.is(result, 13);
+});
+
+test('(day13:helper) #getArrayDepth returns the correct depth of an array', t => {
+  t.is(getArrayDepth([]), 0);
+  t.is(getArrayDepth([[]]), 1);
+  t.is(getArrayDepth([[[]]]), 2);
+
+  
+  t.is(getArrayDepth([[1], [2,3,4]]), 1);
+  t.is(getArrayDepth([1,[2,[3,[4,[5,6,0]]]],8,9]), 4);
+
+  t.is(getArrayDepth([[2], [2], [2, 3, [4]]]), 2);
+});
+
+const expectedSorted =
+`[]
+[[]]
+[[[]]]
+[1,1,3,1,1]
+[1,1,5,1,1]
+[[1],[2,3,4]]
+[1,[2,[3,[4,[5,6,0]]]],8,9]
+[1,[2,[3,[4,[5,6,7]]]],8,9]
+[[1],4]
+[[2]]
+[3]
+[[4,4],4,4]
+[[4,4],4,4,4]
+[[6]]
+[7,7,7]
+[7,7,7,7]
+[[8,7,6]]
+[9]`;
+test('(day13:helper) #sortPackets can sort valid packets', t => {
+  const pairs = parseInput(testData);
+
+  const result = sortPackets(pairs);
+  const expected = expectedSorted.split('\n').map(line => JSON.parse(line)); 
+
+  console.log(result);
+  console.log(expected);
+
+  t.deepEqual(result, expected);
+});
+
+test('day13:part2) Returns the correct decoder key', t => {
+  const result = part2(testData);
+
+  t.is(result, 140);
 });
